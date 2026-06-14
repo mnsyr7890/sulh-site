@@ -5,139 +5,273 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لو لا؟</title>
   <style>
-    * { box-sizing: border-box; font-family: Tahoma, Arial, sans-serif; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle at top, #ffe1ec, #ffc6d9 45%, #ff9ec0);
+      display: grid;
+      place-items: center;
+      font-family: Tahoma, Arial, sans-serif;
+      background: linear-gradient(135deg, #ff7eb3, #ffd1dc, #ffe6a7, #ff9a9e);
+      background-size: 400% 400%;
+      animation: bgMove 9s ease infinite;
       overflow: hidden;
+      padding: 18px;
     }
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .blob {
+      position: fixed;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      filter: blur(18px);
+      opacity: .45;
+      animation: floatBlob 6s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .b1 { background: #ff4d8d; top: 8%; left: 7%; }
+    .b2 { background: #fff; bottom: 8%; right: 5%; animation-delay: 1s; }
+    @keyframes floatBlob { to { transform: translateY(35px) scale(1.15); } }
+
     .card {
-      width: min(92vw, 620px);
-      background: rgba(255,255,255,0.92);
-      border-radius: 28px;
+      width: min(94vw, 610px);
+      min-height: 430px;
+      background: rgba(255,255,255,.82);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255,255,255,.8);
+      border-radius: 34px;
       padding: 34px 22px;
       text-align: center;
-      box-shadow: 0 20px 55px rgba(0,0,0,0.18);
+      box-shadow: 0 25px 70px rgba(120, 20, 60, .25);
       position: relative;
-      z-index: 2;
-      transition: 0.4s ease;
+      z-index: 5;
+      overflow: hidden;
     }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -80px;
+      background: conic-gradient(from 90deg, transparent, rgba(255, 77, 141, .18), transparent 35%);
+      animation: spin 6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .inside { position: relative; z-index: 2; }
+
     h1 {
-      margin: 0 0 32px;
-      color: #2b2b2b;
-      font-size: clamp(24px, 6vw, 34px);
-      line-height: 1.7;
+      margin: 8px auto 18px;
+      font-size: clamp(25px, 6vw, 39px);
+      line-height: 1.55;
+      color: #432036;
+      text-shadow: 0 2px 0 rgba(255,255,255,.8);
+    }
+    .hint {
+      color: #7d4661;
+      font-size: 16px;
+      margin-bottom: 28px;
     }
     .buttons {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 18px;
+      gap: 20px;
+      min-height: 110px;
+      position: relative;
       flex-wrap: wrap;
-      min-height: 90px;
     }
     button {
       border: 0;
-      border-radius: 20px;
-      padding: 16px 36px;
+      border-radius: 999px;
+      padding: 17px 38px;
       font-size: 25px;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
-      transition: all 0.32s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-    #yesBtn {
-      background: #ff3f86;
-      color: white;
-      transform: scale(1);
-      box-shadow: 0 10px 25px rgba(255,63,134,.35);
-      z-index: 5;
-    }
-    #noBtn {
-      background: #f1f1f1;
-      color: #333;
-      transform: scale(1);
+      transition: transform .28s ease, opacity .28s ease, left .28s ease, top .28s ease, box-shadow .28s ease;
+      box-shadow: 0 12px 24px rgba(0,0,0,.18);
+      position: relative;
       z-index: 4;
     }
+    #yesBtn {
+      background: linear-gradient(135deg, #ff2f7c, #ff75a8);
+      color: white;
+    }
+    #noBtn {
+      background: white;
+      color: #5f4050;
+      border: 2px solid #ffd1e0;
+    }
+    #yesBtn:active, #noBtn:active { transform: scale(.94); }
+
     .result {
       display: none;
-      width: min(92vw, 720px);
-      text-align: center;
-      position: relative;
-      z-index: 10;
-      animation: pop .45s ease;
+      margin-top: 18px;
+      animation: pop .6s ease both;
+    }
+    .result.show { display: block; }
+    @keyframes pop {
+      from { transform: scale(.65); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
     .result img {
-      max-width: 100%;
-      max-height: 78vh;
-      border-radius: 22px;
-      box-shadow: 0 18px 45px rgba(0,0,0,.22);
+      width: min(92%, 430px);
+      border-radius: 28px;
+      box-shadow: 0 18px 40px rgba(0,0,0,.25);
       background: #000;
     }
-    .result h2 {
-      color: #fff;
-      text-shadow: 0 3px 10px rgba(0,0,0,.35);
-      font-size: clamp(24px, 6vw, 38px);
-      margin: 0 0 18px;
+    .message {
+      margin: 14px auto 0;
+      color: #ff2f7c;
+      font-size: clamp(23px, 6vw, 34px);
+      font-weight: 900;
     }
-    @keyframes pop {
-      from { transform: scale(.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    .submsg {
+      color: #6c4055;
+      margin-top: 8px;
+      font-size: 17px;
+    }
+    .heart {
+      position: fixed;
+      z-index: 10;
+      color: #ff2f7c;
+      pointer-events: none;
+      animation: rise 1.6s ease-out forwards;
+      font-size: 26px;
+    }
+    @keyframes rise {
+      to { transform: translateY(-150px) scale(1.8) rotate(25deg); opacity: 0; }
+    }
+    .shake { animation: shake .25s linear 1; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
     }
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <h1>تتراجع عن قرارڪ و تبطل زعل لو لا؟</h1>
-    <div class="buttons">
-      <button id="yesBtn">أي</button>
-      <button id="noBtn">لا</button>
-    </div>
-  </div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
 
-  <div class="result" id="result">
-    <h2>عرفت تختار صح ❤️</h2>
-    <img src="result.png" alt="صورة النتيجة">
-  </div>
+  <main class="card" id="card">
+    <div class="inside">
+      <h1 id="question">تتراجع عن قرارڪ و تبطل زعل لو لا؟</h1>
+      <div class="hint" id="hint">فڪر زين قبل لا تضغط لا.</div>
+
+      <div class="buttons" id="buttons">
+        <button id="yesBtn">أي</button>
+        <button id="noBtn">لا</button>
+      </div>
+
+      <section class="result" id="resultBox">
+        <img src="result.png" alt="صورة لطيفة" />
+        <div class="message">زين، هيچ أحسن ❤️</div>
+        <div class="submsg">خلصنا الزعل؟ تعال نصالح.</div>
+      </section>
+    </div>
+  </main>
 
   <script>
     const yesBtn = document.getElementById("yesBtn");
     const noBtn = document.getElementById("noBtn");
     const card = document.getElementById("card");
-    const result = document.getElementById("result");
+    const resultBox = document.getElementById("resultBox");
+    const question = document.getElementById("question");
+    const hint = document.getElementById("hint");
+    const buttons = document.getElementById("buttons");
 
     let yesScale = 1;
     let noScale = 1;
+    let noClicks = 0;
+
+    function makeHeart(x, y) {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = Math.random() > .5 ? "❤️" : "💕";
+      h.style.left = (x || Math.random() * innerWidth) + "px";
+      h.style.top = (y || innerHeight - 80) + "px";
+      document.body.appendChild(h);
+      setTimeout(() => h.remove(), 1700);
+    }
+
+    function playCuteSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0, ctx.currentTime + i * .11);
+          gain.gain.linearRampToValueAtTime(.12, ctx.currentTime + i * .11 + .02);
+          gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + i * .11 + .18);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * .11);
+          osc.stop(ctx.currentTime + i * .11 + .2);
+        });
+      } catch(e) {}
+    }
 
     noBtn.addEventListener("click", () => {
+      noClicks++;
       yesScale += 0.45;
       noScale = Math.max(0.18, noScale - 0.13);
 
       yesBtn.style.transform = `scale(${yesScale})`;
       noBtn.style.transform = `scale(${noScale})`;
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
 
-      if (yesScale >= 4) {
+      const x = Math.random() * 120 - 60;
+      const y = Math.random() * 90 - 45;
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+
+      if (noClicks === 1) hint.textContent = "ليش لا؟ جرّب أي أحلى.";
+      if (noClicks === 2) hint.textContent = "تره زر أي دا يكبر وحده.";
+      if (noClicks === 3) hint.textContent = "خلاص، لا ما بقى إلها مجال.";
+      if (noClicks >= 4) hint.textContent = "اختيار أي صار واضح.";
+
+      makeHeart(innerWidth / 2, innerHeight / 2);
+
+      if (yesScale >= 4.2) {
         yesBtn.style.position = "fixed";
         yesBtn.style.inset = "0";
         yesBtn.style.width = "100vw";
         yesBtn.style.height = "100vh";
         yesBtn.style.borderRadius = "0";
-        yesBtn.style.fontSize = "clamp(70px, 18vw, 170px)";
+        yesBtn.style.fontSize = "72px";
         yesBtn.style.zIndex = "999";
+        yesBtn.textContent = "أي ❤️";
         noBtn.style.opacity = "0";
-        noBtn.style.pointerEvents = "none";
       }
     });
 
-    yesBtn.addEventListener("click", () => {
-      card.style.display = "none";
-      result.style.display = "block";
-      document.body.style.background = "linear-gradient(135deg, #ff8fab, #ffc2d1)";
-      document.body.style.overflow = "auto";
+    yesBtn.addEventListener("click", (e) => {
+      playCuteSound();
+      for (let i = 0; i < 22; i++) {
+        setTimeout(() => makeHeart(Math.random() * innerWidth, innerHeight - 40), i * 55);
+      }
+      yesBtn.style.position = "relative";
+      yesBtn.style.inset = "auto";
+      yesBtn.style.width = "auto";
+      yesBtn.style.height = "auto";
+      yesBtn.style.borderRadius = "999px";
+      yesBtn.style.fontSize = "25px";
+      yesBtn.style.transform = "scale(1)";
+      yesBtn.textContent = "تم الصلح ❤️";
+      noBtn.style.display = "none";
+      question.textContent = "عرفت تختار صح";
+      hint.textContent = "";
+      buttons.style.minHeight = "70px";
+      resultBox.classList.add("show");
     });
   </script>
 </body>
